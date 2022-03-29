@@ -28,9 +28,11 @@ public class IntegerListImpl implements IntegerList {
     }
 
     private void increaseArray() {
-        int newSize = storage.length * 2;
+        int newSize = (int) (storage.length * 1.5);
         storage = Arrays.copyOf(storage, newSize);
     }
+
+
 
     private void checkArrayIfNull(Integer item) {
         if (item == null) {
@@ -92,8 +94,31 @@ public class IntegerListImpl implements IntegerList {
     @Override
     public boolean contains(Integer item) {
         checkArrayIfNull(item);
-        selectionSort(storage);
+        quickSort(storage, 0, storage.length - 1);
         return binarySearch(storage, item) != -1;
+    }
+
+    private void quickSort(Integer[] storage, int begin, int end) {
+        if (begin < end) {
+            int partitionIndex = partition(storage, begin, end);
+
+            quickSort(storage, begin, partitionIndex - 1);
+            quickSort(storage, partitionIndex + 1, end);
+        }
+    }
+
+    private int partition(Integer[] arr, int begin, int end) {
+        int pivot = arr[end];
+        int i = (begin - 1);
+
+        for (int j = begin; j < end; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+                swapElements(arr, i, j);
+            }
+        }
+        swapElements(arr, i + 1, end);
+        return i + 1;
     }
 
     private Integer binarySearch(Integer[] array, Integer item) {
@@ -112,18 +137,6 @@ public class IntegerListImpl implements IntegerList {
             }
         }
         return -1;
-    }
-
-    private static void selectionSort(Integer[] arr) {
-        for (int i = 0; i < arr.length; i++) {
-            int min = i;
-            for (int j = i + 1; j < arr.length; j++) {
-                if (arr[j] < arr[min]) {
-                    min = j;
-                }
-            }
-            swapElements(arr, i, min);
-        }
     }
 
     private static void swapElements(Integer[] firstArray, int j, int i) {
